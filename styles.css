@@ -1,0 +1,510 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #fce7f3 100%);
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header Styles */
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.brain-icon {
+    width: 3rem;
+    height: 3rem;
+    color: #9333ea;
+    margin-right: 1rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #9333ea, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    color: #6b7280;
+    font-size: 1.125rem;
+}
+
+/* Navigation Tabs */
+.tabs {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.tab {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.tab:hover {
+    background: #f3f4f6;
+}
+
+.tab.active {
+    background: linear-gradient(135deg, #9333ea, #ec4899);
+    color: white;
+    box-shadow: 0 4px 6px rgba(147, 51, 234, 0.3);
+}
+
+.tab-icon {
+    font-size: 1.25rem;
+}
+
+/* Content Area */
+.content {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tab-content h2 {
+    font-size: 1.75rem;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed #c084fc;
+    border-radius: 1rem;
+    padding: 3rem;
+    text-align: center;
+    background: #faf5ff;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+}
+
+.upload-area:hover {
+    border-color: #9333ea;
+    background: #f3e8ff;
+}
+
+.upload-icon {
+    width: 4rem;
+    height: 4rem;
+    color: #9333ea;
+    margin: 0 auto 1rem;
+}
+
+.upload-label {
+    cursor: pointer;
+    font-size: 1.125rem;
+}
+
+.upload-text {
+    color: #9333ea;
+    font-weight: 600;
+}
+
+.upload-subtext {
+    color: #6b7280;
+}
+
+.file-info {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.file-status {
+    margin-top: 1rem;
+}
+
+.file-success {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: inline-block;
+    color: #10b981;
+    font-weight: 600;
+}
+
+/* Training Config */
+.training-config {
+    background: linear-gradient(135deg, #faf5ff, #fce7f3);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.training-config h3 {
+    font-size: 1.125rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.config-item label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.config-item select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e9d5ff;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background: white;
+    color: #1f2937;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.config-item select:focus {
+    outline: none;
+    border-color: #9333ea;
+}
+
+/* Buttons */
+.train-button,
+.analyze-button {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #9333ea, #ec4899);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.train-button:hover,
+.analyze-button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px rgba(147, 51, 234, 0.3);
+}
+
+.train-button:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.train-button.training {
+    background: #6b7280;
+}
+
+/* Training Result */
+.training-result {
+    margin-top: 1.5rem;
+}
+
+.success-message {
+    background: #d1fae5;
+    border: 2px solid #6ee7b7;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.success-icon {
+    width: 3rem;
+    height: 3rem;
+    color: #10b981;
+    margin: 0 auto 1rem;
+}
+
+.success-message h3 {
+    color: #065f46;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.success-message p {
+    color: #047857;
+    font-weight: 600;
+}
+
+/* Analyze Tab */
+#analysisText {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e9d5ff;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.3s ease;
+}
+
+#analysisText:focus {
+    outline: none;
+    border-color: #9333ea;
+}
+
+/* Prediction Result */
+.prediction-result {
+    margin-top: 1.5rem;
+}
+
+.prediction-card {
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border: 2px solid;
+}
+
+.prediction-card.positive {
+    background: #d1fae5;
+    border-color: #6ee7b7;
+}
+
+.prediction-card.negative {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.prediction-card.neutral {
+    background: #fef3c7;
+    border-color: #fcd34d;
+}
+
+.prediction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.prediction-header h3 {
+    font-size: 1.5rem;
+    text-transform: capitalize;
+}
+
+.confidence {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.score-bar {
+    margin-bottom: 1rem;
+}
+
+.score-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 0.75rem;
+    background: #e5e7eb;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.5s ease;
+}
+
+.progress-fill.positive {
+    background: #10b981;
+}
+
+.progress-fill.negative {
+    background: #ef4444;
+}
+
+.progress-fill.neutral {
+    background: #f59e0b;
+}
+
+/* Metrics Tab */
+.metrics-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.metric-card.accuracy {
+    background: linear-gradient(135deg, #d1fae5, #6ee7b7);
+}
+
+.metric-card.precision {
+    background: linear-gradient(135deg, #dbeafe, #93c5fd);
+}
+
+.metric-card.recall {
+    background: linear-gradient(135deg, #f3e8ff, #c084fc);
+}
+
+.metric-card h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+/* Chart Container */
+.chart-container {
+    background: #f9fafb;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container h3 {
+    font-size: 1.125rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+/* Confusion Matrix */
+.confusion-matrix-container {
+    background: #f9fafb;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.confusion-matrix-container h3 {
+    font-size: 1.125rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.confusion-matrix {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.confusion-matrix th,
+.confusion-matrix td {
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+}
+
+.confusion-matrix thead tr {
+    background: #f3e8ff;
+}
+
+.confusion-matrix th {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.confusion-matrix td.label {
+    font-weight: 600;
+    text-align: left;
+}
+
+.confusion-matrix td.positive {
+    background: #d1fae5;
+}
+
+.confusion-matrix td.negative {
+    background: #fee2e2;
+}
+
+.confusion-matrix td.neutral {
+    background: #fef3c7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .config-grid,
+    .metrics-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .confusion-matrix {
+        font-size: 0.875rem;
+    }
+}
