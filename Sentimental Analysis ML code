@@ -1,0 +1,285 @@
+import pandas as pd
+import numpy as np
+import re
+import pickle
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+import nltk
+
+# Download required NLTK data
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
+class SentimentAnalyzer:
+    def __init__(self):
+        self.vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1, 2))
+        self.model = None
+        self.lemmatizer = WordNetLemmatizer()
+        self.stop_words = set(stopwords.words('english'))
+        
+    def preprocess_text(self, text):
+        """
+        Clean and preprocess text data
+        """
+        # Convert to lowercase
+        text = text.lower()
+        
+        # Remove URLs
+        text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+        
+        # Remove user mentions and hashtags
+        text = re.sub(r'\@\w+|\#', '', text)
+        
+        # Remove special characters and numbers
+        text = re.sub(r'[^a-zA-Z\s]', '', text)
+        
+        # Tokenize and remove stopwords
+        tokens = text.split()
+        tokens = [self.lemmatizer.lemmatize(word) for word in tokens 
+                  if word not in self.stop_words and len(word) > 2]
+        
+        return ' '.join(tokens)
+    
+    def load_data(self, filepath, text_column='text', label_column='sentiment'):
+        """
+        Load dataset from CSV file
+        Expected format: CSV with columns for text and sentiment labels
+        """
+        try:
+            df = pd.read_csv(filepath, encoding='utf-8')
+            print(f"Dataset loaded: {len(df)} samples")
+            print(f"Columns: {df.columns.tolist()}")
+            
+            # Validate required columns
+            if text_column not in df.columns or label_column not in df.columns:
+                raise ValueError(f"Required columns '{text_column}' and '{label_column}' not found")
+            
+            # Remove missing values
+            df = df.dropna(subset=[text_column, label_column])
+            
+            print(f"\nSentiment Distribution:")
+            print(df[label_column].value_counts())
+            
+            return df
+        except Exception as e:
+            print(f"Error loading data: {e}")
+            return None
+    
+    def prepare_data(self, df, text_column='text', label_column='sentiment', test_size=0.2):
+        """
+        Preprocess and split data into train and test sets
+        """
+        print("\nPreprocessing text data...")
+        df['processed_text'] = df[text_column].apply(self.preprocess_text)
+        
+        # Encode labels (assuming positive=2, neutral=1, negative=0)
+        label_mapping = {'positive': 2, 'neutral': 1, 'negative': 0}
+        df['label_encoded'] = df[label_column].map(label_mapping)
+        
+        X = df['processed_text']
+        y = df['label_encoded']
+        
+        # Split data
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=test_size, random_state=42, stratify=y
+        )
+        
+        print(f"\nTraining samples: {len(X_train)}")
+        print(f"Testing samples: {len(X_test)}")
+        
+        return X_train, X_test, y_train, y_test
+    
+    def train_model(self, X_train, y_train, model_type='logistic'):
+        """
+        Train sentiment analysis model
+        """
+        print(f"\nTraining {model_type} model...")
+        
+        # Vectorize text
+        X_train_vec = self.vectorizer.fit_transform(X_train)
+        
+        # Select and train model
+        if model_type == 'logistic':
+            self.model = LogisticRegression(max_iter=1000, random_state=42)
+        elif model_type == 'random_forest':
+            self.model = RandomForestClassifier(n_estimators=100, random_state=42)
+        elif model_type == 'svm':
+            self.model = SVC(kernel='linear', probability=True, random_state=42)
+        else:
+            raise ValueError(f"Unknown model type: {model_type}")
+        
+        self.model.fit(X_train_vec, y_train)
+        print("Model training completed!")
+        
+        return X_train_vec
+    
+    def evaluate_model(self, X_test, y_test):
+        """
+        Evaluate model performance
+        """
+        X_test_vec = self.vectorizer.transform(X_test)
+        y_pred = self.model.predict(X_test_vec)
+        
+        accuracy = accuracy_score(y_test, y_pred)
+        
+        print("\n" + "="*50)
+        print("MODEL EVALUATION RESULTS")
+        print("="*50)
+        print(f"\nAccuracy: {accuracy:.4f}")
+        
+        print("\nClassification Report:")
+        target_names = ['Negative', 'Neutral', 'Positive']
+        print(classification_report(y_test, y_pred, target_names=target_names))
+        
+        # Confusion Matrix
+        cm = confusion_matrix(y_test, y_pred)
+        self.plot_confusion_matrix(cm, target_names)
+        
+        return accuracy, cm
+    
+    def plot_confusion_matrix(self, cm, labels):
+        """
+        Visualize confusion matrix
+        """
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+                    xticklabels=labels, yticklabels=labels)
+        plt.title('Confusion Matrix', fontsize=16, fontweight='bold')
+        plt.ylabel('Actual Label', fontsize=12)
+        plt.xlabel('Predicted Label', fontsize=12)
+        plt.tight_layout()
+        plt.savefig('confusion_matrix.png', dpi=300, bbox_inches='tight')
+        print("\nConfusion matrix saved as 'confusion_matrix.png'")
+        plt.show()
+    
+    def predict_sentiment(self, text):
+        """
+        Predict sentiment for new text
+        """
+        if self.model is None:
+            raise ValueError("Model not trained yet!")
+        
+        processed_text = self.preprocess_text(text)
+        text_vec = self.vectorizer.transform([processed_text])
+        
+        prediction = self.model.predict(text_vec)[0]
+        probabilities = self.model.predict_proba(text_vec)[0]
+        
+        sentiment_map = {0: 'Negative', 1: 'Neutral', 2: 'Positive'}
+        
+        result = {
+            'sentiment': sentiment_map[prediction],
+            'confidence': probabilities[prediction],
+            'probabilities': {
+                'Negative': probabilities[0],
+                'Neutral': probabilities[1],
+                'Positive': probabilities[2]
+            }
+        }
+        
+        return result
+    
+    def save_model(self, filepath='sentiment_model.pkl'):
+        """
+        Save trained model and vectorizer
+        """
+        model_data = {
+            'model': self.model,
+            'vectorizer': self.vectorizer,
+            'lemmatizer': self.lemmatizer,
+            'stop_words': self.stop_words
+        }
+        
+        with open(filepath, 'wb') as f:
+            pickle.dump(model_data, f)
+        
+        print(f"\nModel saved to {filepath}")
+    
+    def load_model(self, filepath='sentiment_model.pkl'):
+        """
+        Load pre-trained model
+        """
+        with open(filepath, 'rb') as f:
+            model_data = pickle.load(f)
+        
+        self.model = model_data['model']
+        self.vectorizer = model_data['vectorizer']
+        self.lemmatizer = model_data['lemmatizer']
+        self.stop_words = model_data['stop_words']
+        
+        print(f"Model loaded from {filepath}")
+
+
+def main():
+    """
+    Main execution function
+    """
+    # Initialize analyzer
+    analyzer = SentimentAnalyzer()
+    
+    # Load your dataset
+    # Replace 'your_dataset.csv' with your actual file path
+    # Expected format: CSV with 'text' and 'sentiment' columns
+    df = analyzer.load_data('your_dataset.csv', 
+                           text_column='text',  # Adjust column name
+                           label_column='sentiment')  # Adjust column name
+    
+    if df is None:
+        print("Failed to load data. Please check your file path and format.")
+        return
+    
+    # Prepare data
+    X_train, X_test, y_train, y_test = analyzer.prepare_data(df)
+    
+    # Train model (choose: 'logistic', 'random_forest', or 'svm')
+    analyzer.train_model(X_train, y_train, model_type='logistic')
+    
+    # Evaluate model
+    accuracy, cm = analyzer.evaluate_model(X_test, y_test)
+    
+    # Save model
+    analyzer.save_model('sentiment_model.pkl')
+    
+    # Test with sample predictions
+    print("\n" + "="*50)
+    print("SAMPLE PREDICTIONS")
+    print("="*50)
+    
+    test_samples = [
+        "This product is absolutely amazing! I love it!",
+        "Terrible experience. Would not recommend to anyone.",
+        "It's okay, nothing special but does the job."
+    ]
+    
+    for text in test_samples:
+        result = analyzer.predict_sentiment(text)
+        print(f"\nText: {text}")
+        print(f"Sentiment: {result['sentiment']}")
+        print(f"Confidence: {result['confidence']:.2%}")
+        print(f"Probabilities: {result['probabilities']}")
+
+
+if __name__ == "__main__":
+    main()
+
+
+# Example usage for loading and using a saved model:
+"""
+# Load pre-trained model
+analyzer = SentimentAnalyzer()
+analyzer.load_model('sentiment_model.pkl')
+
+# Make predictions
+text = "Your text here"
+result = analyzer.predict_sentiment(text)
+print(result)
+"""
