@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <svg class="brain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2a10 10 0 0 0 0 20 10 10 0 0 0 0-20z"/>
+                    <path d="M12 6v12M6 12h12"/>
+                </svg>
+                <h1 class="title">Sentiment Analysis System</h1>
+            </div>
+            <p class="subtitle">Advanced ML-powered text sentiment classification</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="upload">
+                <span class="tab-icon">📤</span>
+                Data & Training
+            </button>
+            <button class="tab" data-tab="analyze">
+                <span class="tab-icon">💬</span>
+                Live Analysis
+            </button>
+            <button class="tab" data-tab="metrics">
+                <span class="tab-icon">📊</span>
+                Model Metrics
+            </button>
+        </nav>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Upload Tab -->
+            <div id="upload-tab" class="tab-content active">
+                <h2>Upload Dataset</h2>
+                <div class="upload-area" id="uploadArea">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <input type="file" id="fileInput" accept=".csv,.txt,.json" hidden>
+                    <label for="fileInput" class="upload-label">
+                        <span class="upload-text">Click to upload</span>
+                        <span class="upload-subtext"> or drag and drop</span>
+                    </label>
+                    <p class="file-info">CSV, TXT, or JSON files (max 50MB)</p>
+                    <div id="fileStatus" class="file-status"></div>
+                </div>
+
+                <div class="training-config">
+                    <h3>Training Configuration</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label for="modelType">Model Type</label>
+                            <select id="modelType">
+                                <option value="logistic">Logistic Regression</option>
+                                <option value="random_forest">Random Forest</option>
+                                <option value="svm">SVM</option>
+                                <option value="neural_network">Neural Network</option>
+                            </select>
+                        </div>
+                        <div class="config-item">
+                            <label for="vectorizer">Vectorizer</label>
+                            <select id="vectorizer">
+                                <option value="tfidf">TF-IDF</option>
+                                <option value="count">Count Vectorizer</option>
+                                <option value="word2vec">Word2Vec</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="trainButton" class="train-button" disabled>
+                    Start Training
+                </button>
+
+                <div id="trainingResult" class="training-result"></div>
+            </div>
+
+            <!-- Analyze Tab -->
+            <div id="analyze-tab" class="tab-content">
+                <h2>Live Sentiment Analysis</h2>
+                <textarea 
+                    id="analysisText" 
+                    placeholder="Enter text to analyze sentiment... (e.g., product review, tweet, comment)"
+                    rows="6"
+                ></textarea>
+
+                <button id="analyzeButton" class="analyze-button">
+                    Analyze Sentiment
+                </button>
+
+                <div id="predictionResult" class="prediction-result"></div>
+            </div>
+
+            <!-- Metrics Tab -->
+            <div id="metrics-tab" class="tab-content">
+                <h2>Model Performance Metrics</h2>
+                
+                <div class="metrics-summary">
+                    <div class="metric-card accuracy">
+                        <h3>Overall Accuracy</h3>
+                        <p class="metric-value" id="accuracyValue">87.0%</p>
+                    </div>
+                    <div class="metric-card precision">
+                        <h3>Avg Precision</h3>
+                        <p class="metric-value" id="precisionValue">86.7%</p>
+                    </div>
+                    <div class="metric-card recall">
+                        <h3>Avg Recall</h3>
+                        <p class="metric-value" id="recallValue">87.0%</p>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Classification Metrics by Sentiment</h3>
+                    <canvas id="metricsChart"></canvas>
+                </div>
+
+                <div class="confusion-matrix-container">
+                    <h3>Confusion Matrix</h3>
+                    <table class="confusion-matrix">
+                        <thead>
+                            <tr>
+                                <th>Actual / Predicted</th>
+                                <th>Positive</th>
+                                <th>Negative</th>
+                                <th>Neutral</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="label">Positive</td>
+                                <td class="positive">450</td>
+                                <td class="negative">30</td>
+                                <td class="neutral">20</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Negative</td>
+                                <td class="positive">25</td>
+                                <td class="negative">430</td>
+                                <td class="neutral">45</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Neutral</td>
+                                <td class="positive">35</td>
+                                <td class="negative">40</td>
+                                <td class="neutral">425</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
